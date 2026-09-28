@@ -9,6 +9,9 @@ let textoXIzq = -200;
 let rectXIzq = -200;
 let textoX = 50;
 
+//Posición en X fondo del texto
+let cajaY = 450;
+
 function preload(){
 for(let i = 0; i < 19; i++){
 insolacion[i] = loadImage("data/insolacion" + i + ".png");
@@ -45,14 +48,22 @@ background(0);
 if (insolacion[estado]) {
 image(insolacion[estado], 0, 0, width, height);
 }
-//Animación que ubica mejor el texto
+
+//fondo del texto
+cajaY = lerp(cajaY, 275, 0.15);
+push();
+noStroke();
+fill(60, 60, 60, 170);
+rect(20, cajaY, 760, 160, 20);
+pop();
+
+//texto reubicado
 if (textoX < 50) {
 textoX += 5;
 }
 fill(250);
 textSize(18);
-text(textos[estado], textoX, 45);  
-
+text(textos[estado], textoX, cajaY + 35);  
 if (estado === 2 || estado === 6 || estado === 14) {
 if (textoXDer > 450) {
 textoXDer -= 5;
@@ -62,22 +73,24 @@ if (textoXIzq < 50) {
 textoXIzq += 5;
 rectXIzq += 5;
 }
+}
 textSize(14);
 // Botón Derecho
 fill(146, 182, 111);  
-rect(rectXDer - 10, 75, 160, 50);  
+rect(rectXDer - 10, cajaY + 95, 160, 50);  
 fill(0);  
-text(textoDer, textoXDer, height / 5);  
+text(textoDer, textoXDer, cajaY + 110);  
     
 // Botón Izquierdo
 fill(146, 182, 111);  
-rect(rectXIzq - 10, 75, 150, 50);  
+rect(rectXIzq - 10, cajaY + 95, 150, 50);  
 fill(0);  
-text(textoIzq, textoXIzq, height / 5);  
+text(textoIzq, textoXIzq, cajaY + 110);  
 }
 }
 
 function mousePressed() {
+cajaY = height; // la caja vuelve abajo y sube de nuevo
 if (estado < 19) {
 estado++; // suma estados
 textoX = 0; // vuelve el texto
