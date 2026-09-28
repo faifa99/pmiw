@@ -1,26 +1,40 @@
 let estado = 0;
 let insolacion = [];
 let textos = [];
+let flecha;
+let reiniciarIcono;
+let contadorFinal=0;
 
-//Variables para animar los botones
+// Variables para la flecha
+let flechaX = 710;
+let flechaY = 380;
+let flechaAncho = 50;
+let flechaAlto = 40;
+
+// Variables para animar los botones
 let rectXDer = 800;
 let textoXDer = 800;
 let textoXIzq = -200;
 let rectXIzq = -200;
 let textoX = 50;
 
-//Posición en X fondo del texto
+// Variables para los textos de los botones
+let textoDer = "";
+let textoIzq = "";
+
+// Posición en X fondo del texto
 let cajaY = 450;
 
-function preload(){
-for(let i = 0; i < 19; i++){
+function preload() {
+for (let i = 0; i < 20; i++) {
 insolacion[i] = loadImage("data/insolacion" + i + ".png");
 }
+flecha = loadImage("data/flecha.png");
+reiniciarIcono = loadImage("data/reiniciar.png");
 }
 
 function setup() {
-createCanvas(800, 450);
-  
+createCanvas(800, 450); 
 textos[0] = "Pedro Alcazar - Salvador Sualgaray";
 textos[1] = "El calor sofocante y la humedad extrema no frenan a Mister Jones.\n Obsesionado con desmalezar el terreno, trabaja sin descanso\n mientras sus 5 perros lo observan de fondo.";
 textos[2] = "Mister Jones, agobiado por el sol, no ve nada. Pero los perros sí: la Muerte\nse ha materializado con su misma ropa y se acerca. La jauría se eriza\ny ladra desesperada para frenarla.";
@@ -41,15 +55,28 @@ textos[16] = "Mister Jones queria volver al trabajo,pero los perros lo alertan\n
 textos[17] = "Aguantas la ansiedad, pasan las horas y miras el horizonte\npensando que hubiese pasado si trabajabas bajo el sol\nmientras la muerte se evapora";
 textos[18] = "Cae la noche y abrazas a tus perros agradeciendoles\npor haberte alertado por el calor que hubiera pasado";
 textos[19] = "La impaciencia vence a Mister Jones y sales a\nrevisar el pozo de agua, cuando te agarra un golpe de calor";
+textos[20] = "FIN\n\nCreado por Pedro Alcazar y Salvador Sualgaray\n¡Gracias por jugar!";
 }
 
 function draw() {
 background(0);
-if (insolacion[estado]) {
+if(estado === 8 || estado === 11 || estado === 18){
+contadorFinal++;
+
+if(contadorFinal>300){
+estado=20;
+contadorFinal=0;
+cajaY=height;
+textoX=0;
+}
+}else{
+contadorFinal=0;
+}
+
+if (estado !== 20 && insolacion[estado]) {
 image(insolacion[estado], 0, 0, width, height);
 }
 
-//fondo del texto
 cajaY = lerp(cajaY, 275, 0.15);
 push();
 noStroke();
@@ -57,14 +84,14 @@ fill(60, 60, 60, 170);
 rect(20, cajaY, 760, 160, 20);
 pop();
 
-//texto reubicado
 if (textoX < 50) {
 textoX += 5;
 }
 fill(250);
 textSize(18);
 text(textos[estado], textoX, cajaY + 35);  
-if (estado === 2 || estado === 6 || estado === 14) {
+
+if (estado === 2 || estado === 5 || estado === 14) {
 if (textoXDer > 450) {
 textoXDer -= 5;
 rectXDer -= 5;
@@ -74,41 +101,94 @@ textoXIzq += 5;
 rectXIzq += 5;
 }
 }
+  
 textSize(14);
+if (estado === 2 || estado === 5 || estado === 14) {
+
 // Botón Derecho
-fill(146, 182, 111);  
-rect(rectXDer - 10, cajaY + 95, 160, 50);  
-fill(0);  
-text(textoDer, textoXDer, cajaY + 110);  
+fill(40, 40, 40, 215);  
+rect(rectXDer, cajaY + 95, 160, 50);  
+fill(255);  
+text(textoDer, textoXDer, cajaY + 110);    
     
 // Botón Izquierdo
-fill(146, 182, 111);  
-rect(rectXIzq - 10, cajaY + 95, 150, 50);  
-fill(0);  
-text(textoIzq, textoXIzq, cajaY + 110);  
+fill(40, 40, 40, 215);  
+rect(rectXIzq , cajaY + 95, 150, 50);  
+fill(255);  
+text(textoIzq, textoXIzq, cajaY + 110); 
+} 
+else if (estado === 20) {
+flechaY = 380;  
+image(reiniciarIcono, flechaX, flechaY, flechaAncho, flechaAlto);
+}
+else if (estado !== 8 && estado !== 11 && estado !== 18) {
+flechaY = cajaY + 105;  
+image(flecha, flechaX, flechaY, flechaAncho, flechaAlto);
 }
 }
 
 function mousePressed() {
-cajaY = height; // la caja vuelve abajo y sube de nuevo
-if (estado < 19) {
-estado++; // suma estados
-textoX = 0; // vuelve el texto
+if (estado === 20) {
+  // Acá usamos el 380 fijo para que coincida exactamente con la posición del icono en el draw
+  if (detectarFlecha(flechaX, 380, flechaAncho, flechaAlto)) {
+    estado = 0;
+    cajaY = height;
+    textoX = 0;
+    contadorFinal = 0;
+  }
+  return;
+}
+
+if (estado === 2 || estado === 5 || estado === 14) {
+    
+// Clic en el botón derecho
+if (mouseX > 440 && mouseX < 610 && mouseY > cajaY + 95 && mouseY < cajaY + 145) {
+cajaY = height;
+textoX = 0;
+reiniciarBotones();
+
+if (estado === 2) estado = 3;         
+else if (estado === 5) estado = 6;
+else if (estado === 14) estado = 19; 
+}
+// Clic en el botón izquierdo
+else if (mouseX > 30 && mouseX < 190 && mouseY > cajaY + 95 && mouseY < cajaY + 145) {
+cajaY = height;
+textoX = 0;
+reiniciarBotones();
+      
+if (estado === 2) estado = 12;      
+else if (estado === 5) estado = 9;
+else if (estado === 14) estado = 15; 
+}    
+}   
+// Si es una pantalla normal, usamos la flecha
+else if (estado !== 8 && estado !== 11 && estado !== 18) {
+if (detectarFlecha(flechaX, flechaY, flechaAncho, flechaAlto)) {
+cajaY = height;  
+
+if (estado === 19) {
+estado=8;  
+textoX = 0;
+
+}else if (estado< 19){
+estado++;  
+textoX = 0;
+}      
 if (estado === 2) {
 textoDer = "AVANZAR AL CAMPO.";
 textoIzq = "IR A LA SOMBRA.";
 reiniciarBotones();
-} else if (estado === 6) {
+} else if (estado === 5) {
 textoDer = "TOMAR CAÑA.";
 textoIzq = "PEDIR AYUDA.";
 reiniciarBotones();
 } else if (estado === 14) {
-textoDer = "TE QUEDAS BAJO\nTECHO TRABAJANDO";
-textoIzq = "SALES A TRABAJAR\nBAJO EL SOL";
+textoDer = "SALES A TRABAJAR\nBAJO EL SOL";
+textoIzq = "TE QUEDAS BAJO\nTECHO TRABAJANDO";
 reiniciarBotones();
 }
-} else {
-estado = 0;  // nos dice que si pasamos las fotos, volvemos a la primera
+}
 }
 }
 
@@ -117,4 +197,8 @@ textoXDer = 800;
 rectXDer = 800;
 textoXIzq = -200;
 rectXIzq = -200;
+}
+
+function detectarFlecha(x, y, ancho, alto) {
+return mouseX > x && mouseX < x + ancho && mouseY > y && mouseY < y + alto;
 }
