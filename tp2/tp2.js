@@ -4,6 +4,7 @@ let textos = [];
 let flecha;
 let reiniciarIcono;
 let contadorFinal = 0;
+let creditosAnimacion;
 
 // Variables para la flecha
 let flechaX = 710;
@@ -62,6 +63,7 @@ estado = 20;
 contadorFinal = 0;
 cajaY = height;
 textoX = 0;
+creditosAnimacion=0;
 }
 } else {
 contadorFinal = 0;
@@ -70,21 +72,18 @@ contadorFinal = 0;
 if (estado !== 20 && insolacion[estado]) {
 image(insolacion[estado], 0, 0, width, height);
 }
-
+if (estado !== 20) {
 cajaY = lerp(cajaY, 275, 0.15);
 push();
 noStroke();
 fill(60, 60, 60, 170);
 rect(20, cajaY, 760, 160, 20);
 pop();
-
 if (textoX < 50) {
 textoX += 5;
 }
 fill(250);
 textSize(18);
-  
-// Verificamos que el texto exista antes de dibujarlo para evitar errores
 if (textos[estado]) {
 text(textos[estado], textoX + 20, cajaY + 30, 720, 120);
 }
@@ -99,25 +98,56 @@ textoXIzq += 5;
 rectXIzq += 5;
 }
 }
-  
+    
 textSize(14);
 if (estado === 2 || estado === 5 || estado === 14) {
-  
 // Botón Derecho
 fill(40, 40, 40, 215);  
 rect(rectXDer, cajaY + botonYDist, botonAncho, botonAlto);
 fill(255);  
-text(textoDer, textoXDer, cajaY + botonYDist + 15)
-        
+text(textoDer, textoXDer, cajaY + botonYDist + 15);
+
 // Botón Izquierdo
 fill(40, 40, 40, 215);  
 rect(rectXIzq, cajaY + botonYDist, botonAncho, botonAlto);
 fill(255);  
 text(textoIzq, textoXIzq, cajaY + botonYDist + 15);
 } 
+else if (estado !== 8 && estado !== 11 && estado !== 18) {
+flechaY = cajaY + 105;  
+image(flecha, flechaX, flechaY, flechaAncho, flechaAlto);
+}
+}
 else if (estado === 20) {
-flechaY = 380;  
-image(reiniciarIcono, flechaX, flechaY, flechaAncho, flechaAlto);
+  if (creditosAnimacion < 255) {
+    creditosAnimacion += 4;  
+  }
+  
+  // Fondo negro con fundido
+  push();
+  noStroke();
+  fill(0, creditosAnimacion);
+  rect(0, 0, width, height);
+  pop();
+
+  // Configuramos el texto centrado para los créditos
+  fill(250, creditosAnimacion);
+  textSize(18);
+  textAlign(CENTER, CENTER);
+
+  // 👉 Dibujamos cada línea centrada exactamente en la mitad de la pantalla (width / 2)
+  text(textos[20], width / 2, 160);
+  text(textos[21], width / 2, 210);
+  text(textos[22], width / 2, 260);
+
+  // Volvemos el alineamiento a la normalidad para el resto del programa
+  textAlign(LEFT, BASELINE); 
+  
+  // Ícono de reiniciar en su lugar original
+  flechaY = 380;  
+  tint(255, creditosAnimacion);
+  image(reiniciarIcono, flechaX, flechaY, flechaAncho, flechaAlto);
+  noTint();
 }
 else if (estado !== 8 && estado !== 11 && estado !== 18) {
 flechaY = cajaY + 105;  
