@@ -12,7 +12,7 @@ let flechaY = 380;
 let flechaAncho = 50;
 let flechaAlto = 40;
 
-//Variables para los botones
+// Variables para los botones
 let botonAncho = 160;
 let botonAlto = 50;
 let botonYDist = 95; 
@@ -37,208 +37,222 @@ let textoIzq = "";
 // Posición en X fondo del texto
 let cajaY = 450;
 
+// Sonidos
+let click;
+let ambiente;
+
 function preload() {
-for (let i = 0; i < 20; i++) {
-insolacion[i] = loadImage("data/insolacion" + i + ".png");
-}
-flecha = loadImage("data/flecha.png");
-reiniciarIcono = loadImage("data/reiniciar.png");
+  for (let i = 0; i < 20; i++) {
+    insolacion[i] = loadImage("data/insolacion" + i + ".png");
+  }
+  flecha = loadImage("data/flecha.png");
+  reiniciarIcono = loadImage("data/reiniciar.png");
   
-// Cargamos los textos desde el archivo de texto en la carpeta data
-textos = loadStrings("data/insolacion.txt");
+  textos = loadStrings("data/insolacion.txt");
+  click = loadSound("data/click.mp3");
+  ambiente = loadSound("data/ambiente.mp3");
 }
 
 function setup() {
-createCanvas(800, 450); 
+  createCanvas(800, 450); 
 }
 
 function draw() {
-background(0);
+  background(0);
   
-if (estado === 8 || estado === 11 || estado === 18) {
-contadorFinal++;
+  if (estado !== 20) {
+    if (!ambiente.isPlaying()) {
+      ambiente.play(); 
+    }
+  } else {
+    if (ambiente.isPlaying()) {
+      ambiente.stop();
+    }
+  }
 
-if (contadorFinal > 300) {
-estado = 20;
-contadorFinal = 0;
-cajaY = height;
-textoX = 0;
-creditosAnimacion=0;
-}
-} else {
-contadorFinal = 0;
-}
+  if (estado === 8 || estado === 11 || estado === 18) {
+    contadorFinal++;
 
-if (estado !== 20 && insolacion[estado]) {
-image(insolacion[estado], 0, 0, width, height);
-}
-if (estado !== 20) {
-cajaY = lerp(cajaY, 275, 0.15);
-push();
-noStroke();
-fill(60, 60, 60, 170);
-rect(20, cajaY, 760, 160, 20);
-pop();
-if (textoX < 50) {
-textoX += 5;
-}
-fill(250);
-textSize(18);
-if (textos[estado]) {
-text(textos[estado], textoX + 20, cajaY + 30, 720, 120);
-}
+    if (contadorFinal > 300) {
+      estado = 20;
+      contadorFinal = 0;
+      cajaY = height;
+      flechaY = cajaY + 105; 
+      textoX = 0;
+      creditosAnimacion = 0;
+    }
+  } else {
+    contadorFinal = 0;
+  }
 
-if (estado === 2 || estado === 5 || estado === 14) {
-if (textoXDer > 450) {
-textoXDer -= 5;
-rectXDer -= 5;
-}
-if (textoXIzq < 50) {
-textoXIzq += 5;
-rectXIzq += 5;
-}
-}
-    
-textSize(14);
-if (estado === 2 || estado === 5 || estado === 14) {
-// Botón Derecho
-fill(40, 40, 40, 215);  
-rect(rectXDer, cajaY + botonYDist, botonAncho, botonAlto);
-fill(255);  
-text(textoDer, textoXDer, cajaY + botonYDist + 15);
-
-// Botón Izquierdo
-fill(40, 40, 40, 215);  
-rect(rectXIzq, cajaY + botonYDist, botonAncho, botonAlto);
-fill(255);  
-text(textoIzq, textoXIzq, cajaY + botonYDist + 15);
-} 
-else if (estado !== 8 && estado !== 11 && estado !== 18) {
-flechaY = cajaY + 105;  
-image(flecha, flechaX, flechaY, flechaAncho, flechaAlto);
-}
-}
-else if (estado === 20) {
-  if (creditosAnimacion < 255) {
-    creditosAnimacion += 4;  
+  if (estado !== 20 && insolacion[estado]) {
+    image(insolacion[estado], 0, 0, width, height);
   }
   
-  // Fondo negro con fundido
-  push();
-  noStroke();
-  fill(0, creditosAnimacion);
-  rect(0, 0, width, height);
-  pop();
+  if (estado !== 20) {
+    cajaY = lerp(cajaY, 275, 0.15);
+    push();
+    noStroke();
+    fill(60, 60, 60, 170);
+    rect(20, cajaY, 760, 160, 20);
+    pop();
+    
+    if (textoX < 50) {
+      textoX += 5;
+    }
+    
+    fill(250);
+    textSize(18);
+    if (textos[estado]) {
+      text(textos[estado], textoX + 20, cajaY + 30, 720, 120);
+    }
 
-  // Configuramos el texto centrado para los créditos
-  fill(250, creditosAnimacion);
-  textSize(18);
-  textAlign(CENTER, CENTER);
+    if (estado === 2 || estado === 5 || estado === 14) {
+      if (textoXDer > 450) {
+        textoXDer -= 5;
+        rectXDer -= 5;
+      }
+      if (textoXIzq < 50) {
+        textoXIzq += 5;
+        rectXIzq += 5;
+      }
+    }
+      
+    textSize(14);
+    if (estado === 2 || estado === 5 || estado === 14) {
+      // Botón Derecho
+      fill(40, 40, 40, 215);  
+      rect(rectXDer, cajaY + botonYDist, botonAncho, botonAlto);
+      fill(255);  
+      text(textoDer, textoXDer, cajaY + botonYDist + 15);
 
-  // 👉 Dibujamos cada línea centrada exactamente en la mitad de la pantalla (width / 2)
-  text(textos[20], width / 2, 160);
-  text(textos[21], width / 2, 210);
-  text(textos[22], width / 2, 260);
+      // Botón Izquierdo
+      fill(40, 40, 40, 215);  
+      rect(rectXIzq, cajaY + botonYDist, botonAncho, botonAlto);
+      fill(255);  
+      text(textoIzq, textoXIzq, cajaY + botonYDist + 15);
+    } 
+    else if (estado !== 8 && estado !== 11 && estado !== 18) {
+      flechaY = cajaY + 105;  
+      image(flecha, flechaX, flechaY, flechaAncho, flechaAlto);
+    }
+  }
+  else if (estado === 20) {
+    if (creditosAnimacion < 255) {
+      creditosAnimacion += 4;  
+    }
+    
+    push();
+    noStroke();
+    fill(0, creditosAnimacion);
+    rect(0, 0, width, height);
+    pop();
 
-  // Volvemos el alineamiento a la normalidad para el resto del programa
-  textAlign(LEFT, BASELINE); 
-  
-  // Ícono de reiniciar en su lugar original
-  flechaY = 380;  
-  tint(255, creditosAnimacion);
-  image(reiniciarIcono, flechaX, flechaY, flechaAncho, flechaAlto);
-  noTint();
-}
-else if (estado !== 8 && estado !== 11 && estado !== 18) {
-flechaY = cajaY + 105;  
-image(flecha, flechaX, flechaY, flechaAncho, flechaAlto);
-}
+    fill(250, creditosAnimacion);
+    textSize(18);
+    textAlign(CENTER, CENTER);
+
+    text(textos[20], width / 2, 150);
+    text(textos[21], width / 2, 200);
+    text(textos[22], width / 2, 250);
+    text(textos[23], width / 2, 300);
+
+    textAlign(LEFT, BASELINE); 
+    
+    flechaY = 380;  
+    tint(255, creditosAnimacion);
+    image(reiniciarIcono, flechaX, flechaY, flechaAncho, flechaAlto);
+    noTint();
+  }
 }
 
 function mousePressed() {
-if (estado === 20) {
-if (detectarFlecha(flechaX, 380, flechaAncho, flechaAlto)) {
-estado = 0;
-cajaY = height;
-textoX = 0;
-contadorFinal = 0;
+  if (estado === 20) {
+    if (detectarBoton(flechaX, 380, flechaAncho, flechaAlto)) {
+      if (!click.isPlaying()) {
+        click.play();
+      }
+      estado = 0;
+      cajaY = height;
+      flechaY = cajaY + 105; 
+      textoX = 0;
+      contadorFinal = 0;
+    }
+  } 
+  else if (estado === 2 || estado === 5 || estado === 14) {
+    if (detectarBoton(botonDerX, cajaY + botonYDist, botonAncho, botonAlto)) {
+      if (!click.isPlaying()) {
+        click.play();
+      }
+      cajaY = height;
+      flechaY = cajaY + 105; 
+      textoX = 0;
+      reiniciarBotones();
+
+      if (estado === 2) {
+        estado = 3;  
+      } else if (estado === 5) {
+        estado = 6;
+      } else if (estado === 14) {
+        estado = 19;  
+      }
+    }
+    else if (detectarBoton(botonIzqX, cajaY + botonYDist, botonAncho, botonAlto)) {
+      if (!click.isPlaying()) {
+        click.play();
+      }
+      cajaY = height;
+      flechaY = cajaY + 105; 
+      textoX = 0;
+      reiniciarBotones();
+
+      if (estado === 2) {
+        estado = 12;  
+      } else if (estado === 5) {
+        estado = 9;
+      } else if (estado === 14) {
+        estado = 15;  
+      }   
+    }   
+  } 
+ else if (estado !== 8 && estado !== 11 && estado !== 18) {
+    if (detectarBoton(flechaX, flechaY, flechaAncho, flechaAlto)) {
+      click.stop();
+      click.play();
+      cajaY = height;  
+      flechaY = cajaY + 105; 
+
+      if (estado === 19) {
+        estado = 8;  
+        textoX = 0;
+      } else if (estado < 19) {
+        estado++;  
+        textoX = 0;
+      }      
+
+      if (estado === 2) {
+        textoDer = "AVANZAR AL CAMPO.";
+        textoIzq = "IR A LA SOMBRA.";
+        reiniciarBotones();
+      } else if (estado === 5) {
+        textoDer = "TOMAR CAÑA.";
+        textoIzq = "PEDIR AYUDA.";
+        reiniciarBotones();
+      } else if (estado === 14) {
+        textoDer = "SALES A TRABAJAR\nBAJO EL SOL";
+        textoIzq = "TE QUEDAS BAJO\nTECHO TRABAJANDO";
+        reiniciarBotones();
+      }
+    }
+  }
 }
-} 
-else if (estado === 2 || estado === 5 || estado === 14) {
-// Clic en el botón derecho
-if (mouseX > botonDerX && mouseX < botonDerX + botonAncho && mouseY > cajaY + botonYDist && mouseY < cajaY + botonYDist + botonAlto) {
-cajaY = height;
-textoX = 0;
-reiniciarBotones();
-
-if (estado === 2) {
-estado = 3;  
-
-} else if (estado === 5) {
-estado = 6;
-
-} else if (estado === 14) {
-estado = 19; 
-
-}
-}
-// Clic en el botón izquierdo
-else if (mouseX > botonIzqX && mouseX < botonIzqX + botonAncho && mouseY > cajaY + botonYDist && mouseY < cajaY + botonYDist + botonAlto) {
-cajaY = height;
-textoX = 0;
-reiniciarBotones();
-
-if (estado === 2) {
-estado = 12;  
-
-} else if (estado === 5) {
-estado = 9;
-
-} else if (estado === 14) {
-estado = 15; 
-}    
-}   
-} 
-else if (estado !== 8 && estado !== 11 && estado !== 18) {
-  
-if (detectarFlecha(flechaX, flechaY, flechaAncho, flechaAlto)) {
-cajaY = height; 
-
-if (estado === 19) {
-estado = 8;  
-textoX = 0;
-
-} else if (estado < 19) {
-estado++;  
-textoX = 0;
-}      
-
-if (estado === 2) {
-textoDer = "AVANZAR AL CAMPO.";
-textoIzq = "IR A LA SOMBRA.";
-reiniciarBotones();
-
-} else if (estado === 5) {
-textoDer = "TOMAR CAÑA.";
-textoIzq = "PEDIR AYUDA.";
-reiniciarBotones();
-
-} else if (estado === 14) {
-textoDer = "SALES A TRABAJAR\nBAJO EL SOL";
-textoIzq = "TE QUEDAS BAJO\nTECHO TRABAJANDO";
-reiniciarBotones();
-}
-}
-}
-}
-
 function reiniciarBotones() {
-textoXDer = 800;
-rectXDer = 800;
-textoXIzq = -200;
-rectXIzq = -200;
+  textoXDer = 800;
+  rectXDer = 800;
+  textoXIzq = -200;
+  rectXIzq = -200;
 }
 
-function detectarFlecha(x, y, ancho, alto) {
-return mouseX > x && mouseX < x + ancho && mouseY > y && mouseY < y + alto;
+function detectarBoton(x, y, ancho, alto) {
+  return mouseX > x && mouseX < x + ancho && mouseY > y && mouseY < y + alto;
 }
