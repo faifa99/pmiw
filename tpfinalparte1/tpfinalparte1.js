@@ -1,3 +1,4 @@
+//link del video https://youtu.be/-cDBuqztu6A , en el video aparecemos los dos explicando el codigo.
 let estado = 0;
 let insolacion = [];
 let textos = [];
